@@ -1,349 +1,264 @@
-<！doctype html>
-<超文本标记语言 朗="zh-CN">
-<头>
-    <元 字符集="UTF-8">
-    <元 姓名="视口" 内容="宽度=设备宽度，初始比例=1.0">
-    <标题>COS图片上传工具</标题>
-    <链接 rel="样式表" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <风格>
-        * { 边缘: 0; 填充: 0; 箱体尺寸: 边框框; 字体系列: 'PingFang sc', '微软亚黑', 无衬线; }
-        身体 { 背景: 线性梯度(135deg，#f5f7fa0%，#e4efe9100%); 最小高度: 100VH; 填充: 20PX; 显示: 弯曲; justify-content: 中心; 对齐项目: 中心; }
-        .容器 { 宽度: 100%; 最大宽度: 800PX; 背景: 白色的; 边界半径: 12PX; 箱形阴影: 0 10PX 30PX RGBA(0, 0, 0, 0.1); 溢出: 隐藏的; }
-        .页眉 { 背景：#1890ff；颜色: 白色的; 填充: 20PX; 文本对齐: 中心; }
-        .主要内容 { 填充: 30PX; }
-        .部分 { 底边距: 30PX; }
-        .章节标题 { 字体大小: 18PX; 颜色: #333;底边距: 15PX; 垫底: 10PX; 下边框: 1PX 固体#eee；显示: 弯曲; 对齐项目: 中心; }
-        .章节标题 我 { 右边距: 10PX; 颜色：#1890ff；}
-        .上载区域 { 边境: 2PX 虚线#ccc；边界半径: 8PX; 填充: 30PX; 文本对齐: 中心; 底边距: 20PX; 光标: 指针; 过渡: 所有 0.3s; }
-        .上载区域:盘旋 { 边框颜色：#1890ff；背景：#f9f9f9；}
-        .上载区域 我 { 字体大小: 48PX; 颜色：#1890ff；底边距: 15PX; }
-        .输入组 { 底边距: 20PX; }
-        .输入组 标签 { 显示: 块; 底边距: 8PX; 颜色: #333;字体粗细: 500; }
-        .输入组 输入 { 宽度: 100%; 填充: 12PX 15PX; 边境: 1PX 固体#ddd；边界半径: 6PX; 字体大小: 16PX; 过渡: 所有 0.3s; }
-        .输入组 输入:集中 { 概要: 没有一个; 边框颜色：#1890ff；箱形阴影: 0 0 0 2PX RGBA(24, 144, 255, 0.2); }
-        .btn-群 { 显示: 弯曲; 差距: 15PX; }
-        .BTN { 弯曲: 1; 填充: 14PX; 边境: 没有一个; 边界半径: 6PX; 字体大小: 16PX; 光标: 指针; 过渡: 所有 0.3s; 显示: 弯曲; justify-content: 中心; 对齐项目: 中心; }
-        .BTN 我 { 右边距: 8PX; }
-        .btn-cancel { 背景：#f5f5f5；颜色: #666;}
-        .btn-cancel:盘旋 { 背景：#e6e6e6；}
-        .btn-初级 { 背景：#1890ff；颜色: 白色的; }
-        .btn-初级:盘旋 { 背景：#0c7cd5；}
-        .结果区域 { 背景：#f9f9f9；边界半径: 8PX; 填充: 20PX; 上边距: 20PX; 显示: 没有一个; }
-        .result-area h3 { color: #333; margin-bottom: 15px; display: flex; align-items: center; }
-        .result-area h3 i { margin-right: 10px; color: #52c41a; }
-        .link-item { margin-bottom: 15px; }
-        .link-item label { display: block; color: #666; margin-bottom: 5px; font-weight: 500; }
-        .link-url { display: flex; align-items: center; background: white; border: 1px solid #eee; border-radius: 4px; padding: 10px 15px; font-size: 14px; color: #1890ff; word-break: break-all; }
-        .link-url i { margin-right: 8px; color: #52c41a; }
-        .copy-btn { background: #52c41a; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-left: 10px; font-size: 12px; }
-        .copy-btn:hover { background: #389e0d; }
-        .tip { background: #fffbe6; border: 1px solid #ffe58f; border-radius: 4px; padding: 12px; margin-top: 20px; color: #666; font-size: 14px; }
-        .tip i { color: #faad14; margin-right: 8px; }
-        .error-area { background: #fff2f0; border: 1px solid #ffccc7; border-radius: 4px; padding: 15px; margin-top: 20px; color: #f5222d; display: none; }
-        .error-area i { margin-right: 8px; }
-        .config-info { background: #f0f8ff; border-radius: 8px; padding: 15px; margin-top: 30px; }
-        .config-info h3 { color: #1890ff; margin-bottom: 10px; display: flex; align-items: center; }
-        .config-info h3 i { margin-right: 10px; }
-        .config-item { display: flex; margin-bottom: 8px; font-size: 14px; }
-        .config-label { color: #666; min-width: 120px; }
-        .config-value { color: #333; font-family: monospace; word-break: break-all; }
-        #status { color: #f5222d; font-weight: bold; }
-        
-        @media (max-width: 600px) {
-            .btn-group { flex-direction: column; }
-            .config-item { flex-direction: column; }
-            .config-label { min-width: auto; margin-bottom: 5px; }
+<!DOCTYPE html>
+<html>
+<head>
+    <title>手机版COS上传工具</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0; 
+            padding: 20px; 
+            background: #f0f2f5;
+            line-height: 1.6;
         }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1><i class="fas fa-file-upload"></i> 文件管理</h1>
-        </div>
+        .container { 
+            background: white; 
+            border-radius: 15px; 
+            padding: 20px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        h1 { 
+            color: #007bff; 
+            text-align: center;
+            margin: 0 0 15px 0;
+            font-size: 24px;
+        }
+        input, button, textarea { 
+            padding: 14px; 
+            margin: 10px 0; 
+            width: 100%; 
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        input:focus, textarea:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        button { 
+            background: linear-gradient(135deg, #007bff, #0056b3); 
+            color: white; 
+            border: none; 
+            font-weight: bold;
+            font-size: 18px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+        button:active { 
+            transform: scale(0.98); 
+        }
+        button:disabled { 
+            background: #ccc; 
+            transform: none; 
+        }
         
-        <div class="main-content">
-            <div class="section">
-                <h2 class="section-title"><i class="fas fa-upload"></i> 图片上传</h2>
-                
-                <div class="upload-area" id="dropArea">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <p class="upload-text">拖放图片到此处或点击选择文件</p>
-                    <p class="upload-text">支持 JPG, PNG, GIF 格式，最大 5MB</p>
-                    <input type="file" id="fileInput" style="display: none;" accept="image/jpeg,image/png,image/gif">
-                </div>
-                
-                <div class="input-group">
-                    <label for="urlInput"><i class="fas fa-link"></i> 请输入图片URL：</label>
-                    <input type="text" id="urlInput" placeholder="例如：https://example.com/image.jpg">
-                </div>
-                
-                <div class="btn-group">
-                    <button class="btn btn-cancel" id="cancelBtn"><i class="fas fa-times"></i> 取消</button>
-                    <button class="btn btn-primary" id="uploadBtn"><i class="fas fa-upload"></i> 开始上传</button>
-                </div>
-                
-                <div class="error-area" id="errorArea">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <span id="errorText"></span>
-                </div>
-                
-                <div class="result-area" id="resultArea">
-                    <h3><i class="fas fa-check-circle"></i> 上传成功！</h3>
-                    
-                    <div class="link-item">
-                        <label>游戏内相册链接:</label>
-                        <div style="display: flex; align-items: center;">
-                            <div class="link-url">
-                                <i class="fas fa-link"></i>
-                                <span id="gameLink"></span>
-                            </div>
-                            <button class="copy-btn" onclick="copyToClipboard('gameLink')"><i class="fas fa-copy"></i> 复制</button>
-                        </div>
-                    </div>
-                    
-                    <div class="link-item">
-                        <label>存储桶实时链接:</label>
-                        <div style="display: flex; align-items: center;">
-                            <div class="link-url">
-                                <i class="fas fa-database"></i>
-                                <span id="bucketLink"></span>
-                            </div>
-                            <button class="copy-btn" onclick="copyToClipboard('bucketLink')"><i class="fas fa-copy"></i> 复制</button>
-                        </div>
-                    </div>
-                    
-                    <div class="tip">
-                        <i class="fas fa-info-circle"></i>
-                        <span id="messageText">提示：如果已有访问过相册图片第二次上传可能存在缓存，可能需要两天后生效</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="config-info">
-                <h3><i class="fas fa-cog"></i> 配置信息</h3>
-                
-                <div class="config-item">
-                    <span class="config-label">API地址:</span>
-                    <span class="config-value" id="apiEndpoint">等待配置...</span>
-                </div>
-                
-                <div class="config-item">
-                    <span class="config-label">状态:</span>
-                    <span class="config-value" id="status">未配置</span>
-                </div>
-                
-                <div class="config-item">
-                    <span class="config-label">存储桶:</span>
-                    <span class="config-value" id="configBucket">my-game-photos-xygzs-1379178032</span>
-                </div>
-                
-                <div class="config-item">
-                    <span class="config-label">地域:</span>
-                    <span class="config-value" id="configRegion">ap-nanjing</span>
-                </div>
-            </div>
+        .upload-area { 
+            border: 3px dashed #007bff; 
+            padding: 30px; 
+            text-align: center; 
+            margin: 15px 0; 
+            border-radius: 12px;
+            background: #f8f9ff;
+        }
+        .upload-area.active { 
+            background: #e3f2ff; 
+            border-color: #28a745;
+        }
+        
+        .result { 
+            display: none; 
+            margin-top: 25px; 
+            padding: 20px; 
+            background: #d4edda; 
+            border-radius: 12px;
+            border: 2px solid #c3e6cb;
+        }
+        .url-box { 
+            background: white; 
+            padding: 12px; 
+            border-radius: 8px; 
+            margin: 12px 0; 
+            word-break: break-all;
+            font-size: 14px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .loading { 
+            display: none; 
+            text-align: center; 
+            margin: 20px 0;
+        }
+        .旋转器 {
+            宽度: 40PX;
+            高度: 40PX;
+            边缘: 0 自动;
+            边境: 4PX 固体#f3f3f3；
+            上边框: 4PX 固体#007bff；
+            边界半径: 50%;
+            动画: 旋转 1s 线性的 无限的;
+        }
+        @keyframes 旋转 {
+            0% { 改变: 旋转(0deg); }
+            100% { 改变: 旋转(360deg); }
+        }
+        
+        .提示 {
+            背景：#fff3cd；
+            边境: 1PX 固体#ffeaa7；
+            边界半径: 8PX;
+            填充: 12PX;
+            边缘: 10PX 0;
+            字体大小: 14PX;
+        }
+    </风格>
+</头>
+<身体>
+    <div 班级="容器">
+        <H1>📱  Cos文件上传</H1>
+        
+        <div 班级="提示">
+            <强大的>📌  使用说明：</强大的><溴>
+1.粘贴游戏相册URL<溴>
+2. 或选择手机图片上传<溴>
+3.获取永久COS链接
         </div>
-    </div>
 
-    <script>
-        // ✅✅✅ 重要：使用你的函数URL ✅✅✅
-        const API_URL = 'https://1379178032-6w3c4p3ojh.ap-nanjing.tencentscf.com';
+        <输入 类型="文本" 身份标识="inputUrl" 占位符="🖇️ 粘贴游戏相册此处的URL...">
         
-        document.addEventListener('DOMContentLoaded', function() {
-            const dropArea = document.getElementById('dropArea');
-            const fileInput = document.getElementById('fileInput');
-            const urlInput = document.getElementById('urlInput');
-            const cancelBtn = document.getElementById('cancelBtn');
-            const uploadBtn = document.getElementById('uploadBtn');
-            const resultArea = document.getElementById('resultArea');
-            const errorArea = document.getElementById('errorArea');
-            const errorText = document.getElementById('errorText');
-            const gameLink = document.getElementById('gameLink');
-            const bucketLink = document.getElementById('bucketLink');
-            const messageText = document.getElementById('messageText');
-            const apiEndpoint = document.getElementById('apiEndpoint');
-            const status = document.getElementById('status');
-            const configBucket = document.getElementById('configBucket');
-            const configRegion = document.getElementById('configRegion');
+        <div 班级="上载区域" 身份标识="uploadArea">
+            <p>📸 点击选择图片或直接粘贴URL</p>
+            <输入 类型="文件" 身份标识="FileInput" 接受="图像/*" 隐藏的>
+        </div>
+        
+        <button id="uploadBtn">🚀 开始上传</button>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>上传中，请稍候...</p>
+        </div>
+
+        <div class="result" id="result">
+            <h3>✅ 上传成功！</h3>
+            <div class="tip">
+                提示：如果已有访问过相册图片，可能需要两天后生效
+            </div>
             
-            // 显示配置信息
-            apiEndpoint.textContent = API_URL;
-            status.textContent = '已配置';
-            status.style.color = '#52c41a';
+            <p><strong>🔗 你的COS链接：</strong></p>
+<div 班级="url-box" 身份标识="cosLink"></div>
             
-            // 文件选择事件
-            dropArea.addEventListener('click', function() {
-                fileInput.click();
-            });
+<按钮 onClick="copyUrl()">📋  复制链接</按钮>
+<按钮 onClick="OpenUrl()" 风格="背景：#28a745；">🌐  打开链接</按钮>
+</div>
+</div>
+
+<脚本>
+        // 替换为你的云函数URL（重要！ ）
+        Const API_URL='https://1379178032-6w3c4p3ojh.ap-nanjing.tencentscf.com';
+        
+        Const inputUrl=文件.getElementById('inputUrl');
+        Const uploadArea=文件.getElementById('uploadArea');
+        Const FileInput=文件.getElementById('fileInput');
+        Const uploadBtn=文件.getElementById('uploadBtn');
+        Const 装载=文件.getElementById('正在加载');
+        Const 结果=文件.getElementById('结果');
+        Const cosLink=文件.getElementById('cosLink');
+        
+        // 文件选择
+        uploadArea.addEventListener('单击', ()=>{
+            FileInput.点击();
+        });
+        
+        FileInput.addEventListener('更改', (e)=>{
+            如果 (e.目标.文件.长度) {
+                uploadArea.innerHTML='<p>✅ 已选择：${e.目标.文件[0].姓名}</p>';
+                inputUrl.价值=''; //清空URL输入
+            }
+        });
+        
+//上传功能// 上传功能
+异步函数uploadFile(){异步功能uploadFile按钮)异步功能uploadFile禁用
+ConstURL=输入URL#CCC；价值.修剪()；常数URL=inputUrl.价值.修剪();
+Const文件=FileInput.文件[0]；常数文件=FileInput.文件[0];
             
-            fileInput.addEventListener('change', function(e) {
-                if (e.target.files.length > 0) {
-                    urlInput.value = '';
-                }
-            });
-            
-            // 拖放功能
-            dropArea.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                dropArea.style.borderColor = '#1890ff';
-                dropArea.style.background = '#f0f8ff';
-            });
-            
-            dropArea.addEventListener('dragleave', function(e) {
-                e.preventDefault();
-                dropArea.style.borderColor = '#ccc';
-                dropArea.style.background = '';
-            });
-            
-            dropArea.addEventListener('drop', function(e) {
-                e.preventDefault();
-                dropArea.style.borderColor = '#ccc';
-                dropArea.style.background = '';
-                
-                if (e.dataTransfer.files.length > 0) {
-                    fileInput.files = e.dataTransfer.files;
-                    urlInput.value = '';
-                }
-            });
-            
-            // 取消按钮事件
-            cancelBtn.addEventListener('单击', 功能() {
-                urlInput.价值='';
-                FileInput.价值='';
-                resultArea.风格.显示='无';
-                errorArea.风格.显示='无';
-            });
-            
-            // 上传按钮事件
-            uploadBtn.addEventListener('单击', 异步功能() {
-                ConstURL=urlInput.价值.修剪();
-                Const文件=FileInput.文件[0];
-                
-                如果 (!URL&& !文件) {
-                    showError('请输入URL或选择文件');
-                    返回;
-                }
-                
-                如果 (文件 && 文件.大小>5 * 1024 * 1024) {
-                    showError('文件大小不能超过5 MB');
-                    返回;
-                }
-                
-                尝试{
-                    setUploadingState();
-                    
-                    让结果;
-                    如果 (文件) {
-                        结果=等候uploadFile(文件);
-                    } 其他{
-                        结果=等候uploadUrl(URL);
-                    }
-                    
-                    如果 (结果.成功) {
-                        showSuccess(结果.game_link, 结果.Cos_link, 结果.消息);
-                    } 其他{
-                        showError(结果.误差||'上传失败');
-                    }
-                } 赶上 (误差) {
-                    showError('网络错误: '+误差.消息);
-                } 最后{
-                    resetUploadButton();
-                }
-            });
-            
-            //上传URL
-            异步功能uploadUrl(imageUrl) {
-                Const响应=等候取来(API_URL，{
-                    方法: 'POST',
-                    页眉: {
-                        '内容类型': '应用程序/约翰逊,
-                    },
-                    身体: JSON.使字符串化({
-                        image_url: imageUrl
-                    })
-                });
-                
-                如果 (!响应.好的) {
-                    扔新的误差('HTTP错误：${响应.状态}')；
-                }
-                
-返回等待响应.返回()；返回等候响应.JSON();
+如果(！URL&&！文件){如果(！URL&&！文件) {
+警惕的('请先输入URL或选择图片')；警惕的上载区域'请先输入URL或选择图片')；警惕的
+返回；返回;
             }
             
-// 上传文件// 上传文件
-异步函数uploadFile(文件){异步功能uploadFile(文件) {
-Const读者=新的FileReader()；常数读者=新的FileReader);
-                
-返回新承诺((解决、拒绝)=>返回返回新的新的返回新的解决，新的解决，承诺
-读者.读者=onload(){读者=异步=异步功能) {
+装载.风格.显示=PX；装载.风格.显示='块';
+uploadBtn.禁用=true；uploadBtn.禁用=正确;
+            
 尝试{尝试{
-常量响应=Const(API_URL，{Const响应=等候=取来(API_URL，{
-方法："POST"，方法：'POST'"POST"，方法：'邮件'，
+让RequestData=背景上载区域；让RequestData：#活跃的{};
+                
+如果(URL){如果(URL)如{(
+RequestData={URL:URL}；请求数据={ URL:URL };
+}其他如果(文件){} 其他如果(文件)文件)
+//将文件转换为base64//将文件转换为Base64
+Constbase64=等待文件ToBase64(文件=等候fileToBase64PX；常数base64);
+RequestData=文本对齐RequestData=中心中心
+fileData:base64.分离分离PXPX[[1//去除data1//图像//图像/JPEG去除数据/JPEG；base64，前缀fileData'，')[base64]，//分离:JPEG；base64，前缀fileDatabase64/JPEG；base64，前缀
+文件名：文件。name文件名：文件.姓名
+                    背景：#f8f9ff；
+                }
+                
+常量响应=等待提取背景：(缺点t响应#e3f2ff；t响应等候取来等候取来API_URL，API_URL，
+方法："POST"，，方法：法：'POST'#28方法：法：
 标题：{页眉：{
-'内容类型'：'内容类型'：'应用程序/'应用程序/JSON''：'应用程序/
-                                },
-正文：JSON.身体({身体：JSON.使字符串化({
-image_data:image_data.结果，影像资料(_D)：阅读器。结果,
-文件名：文件.文件名(_N).文件
-                                })
-                            });
-                            
-如果(！response.如果){如果 (!响应.好的) {
-抛出新错误('HTTP错误：${response.status}')；抛出新的误差('HTTP错误：${响应.状态}')；
-                            }
-                            
-解决(等待响应.解决(等候)；解决(等候响应。响应())响应。
-}赶上(错误){} 赶上赶上误差) {
-拒绝(错误)；拒绝(误差);
-                        }
-                    };
-                    
-读者.读者=onError=我()读者读者=功能=功能() {
-拒绝(新错误('文件读取失败'))；拒绝(新的误差拒绝误差拒绝'文件读取失败'新的误差
-                    };BTN;
-                    
-读者.读者(文件)；阅读器.readAsDataURL(文件);
+'内容类型'：'应用程序/约翰逊，'内容类型'：'应用程序：PX,
+                    },
+正文：JSON.使字符串化显示RequestDataRequestData身体: 身体.json(RequestData
                 });
+                
+ConstresultData=等背景：#d4edda；(#d4edda；(；常数resultData；常数resultData；常数resultData#d4edda；等候响应.JSON；常数resultData；常数resultData；常数resultData);
+                
+如果边境resultData如果如果边境resultDataResultData如果如果边境resultData如果如果边境resultData如果如果边境resultDataResultData如果如果边境resultData如果如果边境resultDataResultData如果如果边境resultData如果如果边境resultData如果如果边境resultDataResultData如果如果边境resultData如果如果边境resultData如果如果边境resultDataResultData如果.成功PX)resu固体
+cosLink.textContent=resultData.cosUrl；cosLink.textContent=resultData.cosUrl;
+结果.风格.显示='块'；结果.风格.显示='块';
+结果.scrollIntoView背景{行为：'平滑'})；结果.scrollIntoView白色的PX 行为：'平滑' });
+}其他{} 其他{
+警惕的('上传失败：'+resultData.消息PX；警惕的('上传失败: '；警惕的resultData.'上传失败: ')+
+                }
+}赶上断字符错误){高度赶上(错误误差) {
+警惕的警惕的'网络错误：'+'网络错误：'+误差'网络错误: '；警惕的误差；警惕的误差.消息PX；警惕的).消息PX；警惕的
+}最后{} 最后{
+装载.风格.显示=PX；装载.固体#007bff显示='无';
+uploadBtn.禁用=false；uploadBtn.禁用=假的;
             }
-            
-函数setUploadingState(){功能setUploadingState() {-信息
-uploadBtn.uploadBtn=<innerHTML类=<我=班级="fas fa-spinner fa-spin"></i>上传中...'></i>上传中...'；uploadBtn.innerHTML=<我班级="fas fa-spinner fa-spin"></i>上传中...'
-uploadBtn.uploadBtn=禁用=正确=正确;
-errorArea.errorArea.风格=显示；errorArea='无'.显示='无';显示=PX;
-            }-价值
-            
-函数resetUploadButton(){功能resetUploadButton() {
-uploadBtn.uploadBtn介质=innerHTML；uploadBtn='<i class="fas fa-upload"></i>开始上传'='<i class="fas fa-upload"></i>开始上传';
-uploadBtn.uploadBtn=禁用=假的=假的;柱;
-            }
-            
-函数showSuccess(gameLinkUrl，bucketLinkUrl，消息){功能showSuccess(gameLinkUrl，bucketLinkUrl，消息) {
-GameLink.GameLink
-<bucketLink
-<.messagetext=>=messagetext=textContent=
-resultArea.resultArea=风格=显示；resultArea.>='块';
-errorArea.errorArea=风格=显示；errorArea.>='无';
-resultArea.resultArea><({行为：'平滑'=scrollIntoView> </我;
-</
-            
-函数showError(ErrorMessage){功能showError(ErrorMessage)<
-ERRORTEXT.ERRORTEXT=textContent=ErrorMessage;
-errorArea.errorArea=风格=显示；errorArea.>=<;
-resultArea.resultArea.风格=显示；resultArea='无'.显示='无';
-errorArea.errorArea(行为：行为：'平滑'scrollIntoView)；errorArea。行为班级{'平滑”平滑'})；({；errorArea。行为('平滑'身份标识)='平滑”平滑'>;
-}}
-})});};));
+        }
         
-函数CopyToClipboard(elementId){功能CopyToClipboard(elementId)函数CopyToClipboard(elementId){功能CopyToClipboard(elementId){{
-常量文本常量文本=常量
-领航员领航员.领航员.剪贴板(文本).WRITETEXT(文本)=>然后领航员.剪贴板.WRITETEXT(文本)=>然后(()=>{领航员.剪贴板(文本).WRITETEXT(文本)=>然后领航员.剪贴板.WRITETEXT(文本)=>然后(()=>{领航员.剪贴板(文本).WRITETEXT(文本)=>然后领航员.剪贴板.WRITETEXT(文本)=>然后(()=>{领航员.剪贴板(文本).WRITETEXT(文本)=>然后领航员.剪贴板.WRITETEXT(文本)=>然后(()=>{
-警惕的('链接已复制到剪贴板')；警报('链接已复制到剪贴板')警惕的('链接已复制到剪贴板')；警报('链接已复制到剪贴板')警惕的('链接已复制到剪贴板')；警报('链接已复制到剪贴板')警惕的('链接已复制到剪贴板')；警报('链接已复制到剪贴板');
-})})})}).赶上=>(犯错犯错=>赶上><=>我赶上犯错犯错=>赶上(犯错=>{><赶上标签>=>犯错(犯错=>赶上赶上犯错犯错=>赶上(犯错=>{赶上犯错=>犯错
-控制台控制台.控制台('复制失败：'，犯错误差；控制台.'复制失败:'('复制失败:'，犯错);控制台('复制失败：'，犯错误差；控制台.'复制失败:'(>,'复制失败:');犯错('复制失败：'，犯错误差；控制台.'控制台:'('复制失败：'，犯错误差；控制台.'复制失败; 控制台('复制失败：'，犯错误差；控制台.'复制失败:''复制失败:''复制失败:'，犯错犯错;
-警惕的('复制失败，请手动复制')；警报('复制失败，请手动复制')警惕的('复制失败，请手动复制')；警报('复制失败，请手动复制');警惕的
-})});});
+//边缘//文件转base64
+函数fileToBase64(文件){功能fileToBase64(文件) {
+返回新承诺((解决、拒绝)=>返回新的承诺=>
+Const读者=新建FileReader新建FileReader(；常数=读者读者();
+读者.readAsDataURLreadAsDataURL(文件)；读者.readAsDataURLreadAsDataURL(文件);
+读者.onload=()=>(读者.结果)；读者.onload=()=>解决(读者.结果);
+读者.onError=误差=>拒绝拒绝(错误)；读者.onError=误差=>拒绝(误差);
+            });
+        }
+        
+//复制链接// 复制链接
+函数copyUrl(){功能copyUrl() {
+Const文本=cosLiNK.textContent；常量=文本=coslink.textContent;
+领航员.剪贴板.WRITETEXT(文本).然后(()=>{领航员.剪贴板.WRITETEXT(文本).然后(()=>{
+警惕的('✅ 链接已复制')；警惕的('✅ 链接已复制');
+            });
+        }
+        
+//打开链接//打开链接
+函数OpenUrl(){功能OpenUrl() {
+窗户.打开打开打开cosLink.textContent，'_blank')；窗户；窗户.打开(cosLink.textContent，'_blank')；(cosLink.textContent, '_blank');
 }}
-</脚本>/>
-</身体>/>
-</超文本标记语言>/超文本标记语言>
+        
+//绑定事件// 绑定事件绑定事件// 绑定事件
+uploadBtnuploadBtn.addEventListener('单击'，uploadFile)；uploadBtn.addEventListener('单击'，uploadFile)；('单击'，uploadFile)；uploadBtn.addEventListener('单击'，uploadFile);
+inputUrlinputUrl.addEventListener('按键'，(e)=>{inputUrl.addEventListener('按键'，(e)=>{('按键'，(e)=>{inputUrl.addEventListener('按键'，(e)=>{
+如果(e.钥匙==='输入')uploadFile()；如果(e.钥匙==='输入'uploadFileploadFile()；(e.钥匙==='输入')uploadFile()；如果(e。钥匙)；如果(e.钥匙==='输入'uuploadFileuploadFile()；'输入')uploadFile();
+})});});});
+</脚本>脚本>脚本>脚本>脚本>脚本>脚本>脚本>
+</身体>身体>身体>身体>身体>身体>身体>身体>
+</超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文 本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>
