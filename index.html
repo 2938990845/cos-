@@ -92,46 +92,46 @@
             text-align: center; 
             margin: 20px 0;
         }
-        .旋转器 {
-            宽度: 40PX;
-            高度: 40PX;
-            边缘: 0 自动;
-            边境: 4PX 固体#f3f3f3；
-            上边框: 4PX 固体#007bff；
-            边界半径: 50%;
-            动画: 旋转 1s 线性的 无限的;
+        .spinner {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
-        @keyframes 旋转 {
-            0% { 改变: 旋转(0deg); }
-            100% { 改变: 旋转(360deg); }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
-        .提示 {
-            背景：#fff3cd；
-            边境: 1PX 固体#ffeaa7；
-            边界半径: 8PX;
-            填充: 12PX;
-            边缘: 10PX 0;
-            字体大小: 14PX;
+        .tip {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 14px;
         }
-    </风格>
-</头>
-<身体>
-    <div 班级="容器">
-        <H1>📱  Cos文件上传</H1>
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 COS文件上传</h1>
         
-        <div 班级="提示">
-            <强大的>📌  使用说明：</强大的><溴>
-1.粘贴游戏相册URL<溴>
-2. 或选择手机图片上传<溴>
-3.获取永久COS链接
+        <div class="tip">
+            <strong>📌 使用说明：</strong><br>
+            1. 粘贴游戏相册URL<br>
+            2. 或选择手机图片上传<br>
+            3. 获取永久COS链接
         </div>
 
-        <输入 类型="文本" 身份标识="inputUrl" 占位符="🖇️ 粘贴游戏相册此处的URL...">
+        <input type="text" id="inputUrl" placeholder="🖇️ 粘贴游戏相册URL here...">
         
-        <div 班级="上载区域" 身份标识="uploadArea">
-            <p>📸 点击选择图片或直接粘贴URL</p>
-            <输入 类型="文件" 身份标识="FileInput" 接受="图像/*" 隐藏的>
+        <div class="upload-area" id="uploadArea">
+            <p>📸 点击选择图片 或 直接粘贴URL</p>
+            <input type="file" id="fileInput" accept="image/*" hidden>
         </div>
         
         <button id="uploadBtn">🚀 开始上传</button>
@@ -148,117 +148,117 @@
             </div>
             
             <p><strong>🔗 你的COS链接：</strong></p>
-<div 班级="url-box" 身份标识="cosLink"></div>
+            <div class="url-box" id="cosLink"></div>
             
-<按钮 onClick="copyUrl()">📋  复制链接</按钮>
-<按钮 onClick="OpenUrl()" 风格="背景：#28a745；">🌐  打开链接</按钮>
-</div>
-</div>
+            <button onclick="copyUrl()">📋 复制链接</button>
+            <button onclick="openUrl()" style="background: #28a745;">🌐 打开链接</button>
+        </div>
+    </div>
 
-<脚本>
-        // 替换为你的云函数URL（重要！ ）
-        Const API_URL='https://1379178032-6w3c4p3ojh.ap-nanjing.tencentscf.com';
+    <script>
+        // 替换为你的云函数URL（重要！）
+        const API_URL = 'https://1379178032-6w3c4p3ojh.ap-nanjing.tencentscf.com';
         
-        Const inputUrl=文件.getElementById('inputUrl');
-        Const uploadArea=文件.getElementById('uploadArea');
-        Const FileInput=文件.getElementById('fileInput');
-        Const uploadBtn=文件.getElementById('uploadBtn');
-        Const 装载=文件.getElementById('正在加载');
-        Const 结果=文件.getElementById('结果');
-        Const cosLink=文件.getElementById('cosLink');
+        const inputUrl = document.getElementById('inputUrl');
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const loading = document.getElementById('loading');
+        const result = document.getElementById('result');
+        const cosLink = document.getElementById('cosLink');
         
         // 文件选择
-        uploadArea.addEventListener('单击', ()=>{
-            FileInput.点击();
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
         });
         
-        FileInput.addEventListener('更改', (e)=>{
-            如果 (e.目标.文件.长度) {
-                uploadArea.innerHTML='<p>✅ 已选择：${e.目标.文件[0].姓名}</p>';
-                inputUrl.价值=''; //清空URL输入
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                uploadArea.innerHTML = `<p>✅ 已选择: ${e.target.files[0].name}</p>`;
+                inputUrl.value = ''; // 清空URL输入
             }
         });
         
-//上传功能// 上传功能
-异步函数uploadFile(){异步功能uploadFile按钮)异步功能uploadFile禁用
-ConstURL=输入URL#CCC；价值.修剪()；常数URL=inputUrl.价值.修剪();
-Const文件=FileInput.文件[0]；常数文件=FileInput.文件[0];
+        // 上传功能
+        async function uploadFile() {
+            const url = inputUrl.value.trim();
+            const file = fileInput.files[0];
             
-如果(！URL&&！文件){如果(！URL&&！文件) {
-警惕的('请先输入URL或选择图片')；警惕的上载区域'请先输入URL或选择图片')；警惕的
-返回；返回;
+            if (!url && !file) {
+                alert('请先输入URL或选择图片');
+                return;
             }
             
-装载.风格.显示=PX；装载.风格.显示='块';
-uploadBtn.禁用=true；uploadBtn.禁用=正确;
+            loading.style.display = 'block';
+            uploadBtn.disabled = true;
             
-尝试{尝试{
-让RequestData=背景上载区域；让RequestData：#活跃的{};
+            try {
+                let requestData = {};
                 
-如果(URL){如果(URL)如{(
-RequestData={URL:URL}；请求数据={ URL:URL };
-}其他如果(文件){} 其他如果(文件)文件)
-//将文件转换为base64//将文件转换为Base64
-Constbase64=等待文件ToBase64(文件=等候fileToBase64PX；常数base64);
-RequestData=文本对齐RequestData=中心中心
-fileData:base64.分离分离PXPX[[1//去除data1//图像//图像/JPEG去除数据/JPEG；base64，前缀fileData'，')[base64]，//分离:JPEG；base64，前缀fileDatabase64/JPEG；base64，前缀
-文件名：文件。name文件名：文件.姓名
-                    背景：#f8f9ff；
+                if (url) {
+                    requestData = { url: url };
+                } else if (file) {
+                    // 将文件转换为base64
+                    const base64 = await fileToBase64(file);
+                    requestData = { 
+                        fileData: base64.split(',')[1], // 去除data:image/jpeg;base64,前缀
+                        fileName: file.name
+                    };
                 }
                 
-常量响应=等待提取背景：(缺点t响应#e3f2ff；t响应等候取来等候取来API_URL，API_URL，
-方法："POST"，，方法：法：'POST'#28方法：法：
-标题：{页眉：{
-'内容类型'：'应用程序/约翰逊，'内容类型'：'应用程序：PX,
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
                     },
-正文：JSON.使字符串化显示RequestDataRequestData身体: 身体.json(RequestData
+                    body: JSON.stringify(requestData)
                 });
                 
-ConstresultData=等背景：#d4edda；(#d4edda；(；常数resultData；常数resultData；常数resultData#d4edda；等候响应.JSON；常数resultData；常数resultData；常数resultData);
+                const resultData = await response.json();
                 
-如果边境resultData如果如果边境resultDataResultData如果如果边境resultData如果如果边境resultData如果如果边境resultDataResultData如果如果边境resultData如果如果边境resultDataResultData如果如果边境resultData如果如果边境resultData如果如果边境resultDataResultData如果如果边境resultData如果如果边境resultData如果如果边境resultDataResultData如果.成功PX)resu固体
-cosLink.textContent=resultData.cosUrl；cosLink.textContent=resultData.cosUrl;
-结果.风格.显示='块'；结果.风格.显示='块';
-结果.scrollIntoView背景{行为：'平滑'})；结果.scrollIntoView白色的PX 行为：'平滑' });
-}其他{} 其他{
-警惕的('上传失败：'+resultData.消息PX；警惕的('上传失败: '；警惕的resultData.'上传失败: ')+
+                if (resultData.success) {
+                    cosLink.textContent = resultData.cosUrl;
+                    result.style.display = 'block';
+                    result.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    alert('上传失败: ' + resultData.message);
                 }
-}赶上断字符错误){高度赶上(错误误差) {
-警惕的警惕的'网络错误：'+'网络错误：'+误差'网络错误: '；警惕的误差；警惕的误差.消息PX；警惕的).消息PX；警惕的
-}最后{} 最后{
-装载.风格.显示=PX；装载.固体#007bff显示='无';
-uploadBtn.禁用=false；uploadBtn.禁用=假的;
+            } catch (error) {
+                alert('网络错误: ' + error.message);
+            } finally {
+                loading.style.display = 'none';
+                uploadBtn.disabled = false;
             }
         }
         
-//边缘//文件转base64
-函数fileToBase64(文件){功能fileToBase64(文件) {
-返回新承诺((解决、拒绝)=>返回新的承诺=>
-Const读者=新建FileReader新建FileReader(；常数=读者读者();
-读者.readAsDataURLreadAsDataURL(文件)；读者.readAsDataURLreadAsDataURL(文件);
-读者.onload=()=>(读者.结果)；读者.onload=()=>解决(读者.结果);
-读者.onError=误差=>拒绝拒绝(错误)；读者.onError=误差=>拒绝(误差);
+        // 文件转base64
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
             });
         }
         
-//复制链接// 复制链接
-函数copyUrl(){功能copyUrl() {
-Const文本=cosLiNK.textContent；常量=文本=coslink.textContent;
-领航员.剪贴板.WRITETEXT(文本).然后(()=>{领航员.剪贴板.WRITETEXT(文本).然后(()=>{
-警惕的('✅ 链接已复制')；警惕的('✅ 链接已复制');
+        // 复制链接
+        function copyUrl() {
+            const text = cosLink.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ 链接已复制');
             });
         }
         
-//打开链接//打开链接
-函数OpenUrl(){功能OpenUrl() {
-窗户.打开打开打开cosLink.textContent，'_blank')；窗户；窗户.打开(cosLink.textContent，'_blank')；(cosLink.textContent, '_blank');
-}}
+        // 打开链接
+        function openUrl() {
+            window.open(cosLink.textContent, '_blank');
+        }
         
-//绑定事件// 绑定事件绑定事件// 绑定事件
-uploadBtnuploadBtn.addEventListener('单击'，uploadFile)；uploadBtn.addEventListener('单击'，uploadFile)；('单击'，uploadFile)；uploadBtn.addEventListener('单击'，uploadFile);
-inputUrlinputUrl.addEventListener('按键'，(e)=>{inputUrl.addEventListener('按键'，(e)=>{('按键'，(e)=>{inputUrl.addEventListener('按键'，(e)=>{
-如果(e.钥匙==='输入')uploadFile()；如果(e.钥匙==='输入'uploadFileploadFile()；(e.钥匙==='输入')uploadFile()；如果(e。钥匙)；如果(e.钥匙==='输入'uuploadFileuploadFile()；'输入')uploadFile();
-})});});});
-</脚本>脚本>脚本>脚本>脚本>脚本>脚本>脚本>
-</身体>身体>身体>身体>身体>身体>身体>身体>
-</超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文 本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>超文本标记语言>
+        // 绑定事件
+        uploadBtn.addEventListener('click', uploadFile);
+        inputUrl.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') uploadFile();
+        });
+    </script>
+</body>
+</html>
