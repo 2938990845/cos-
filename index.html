@@ -184,149 +184,149 @@
                 <img id="previewImage" src="" alt="预览图">
             </div>
             
-            <div 班级="状态" 身份标识="StatusMessage" 风格="显示: 没有一个;"></div>
+            <div class="status" id="statusMessage" style="display: none;"></div>
         </div>
     </div>
 
-    <脚本>
-//配置信息-与python脚本保持一致
-Const配置={
-secretId：‘AKIDNZbQ2Sfy5D9rM073nLhstiQzMWUHyUpI'，
-secretKey：'OaYL1Yu3qY3JAyd6OceRzMbcrukNcdR5'，
-地区: “南京”,
-桶: '游戏数据服务-1252931805',
-targetDomain：'download.nature.qq.com'
-};
+    <script>
+        // 配置信息 - 与Python脚本保持一致
+        const config = {
+            secretId: 'AKIDNZbQ2Sfy5D9rM073nLhstiQzMWUHyUpI',
+            secretKey: 'OaYL1Yu3qY3JAyd6OceRzMbcrukNcdR5',
+            region: 'ap-nanjing',
+            bucket: 'sgame-data-service-1252931805',
+            targetDomain: 'download.nature.qq.com'
+        };
 
-//初始化COS客户端
-Const Cos=新的Cos({
-SecretId：配置.secretId，
-secretKey：配置.secretKey
-});
+        // 初始化COS客户端
+        const cos = new COS({
+            SecretId: config.secretId,
+            SecretKey: config.secretKey
+        });
 
-让selectedFile=无效的；
+        let selectedFile = null;
 
-// 预览选中的图片
-文件.getElementById('localImage').addEventListener('更改'，功能(e){
-Const文件=e.目标.文件[0]；
-如果 (文件) {
-selectedFile=文件；
-Const读者=新的FileReader()；
-读者.onload=功能(e){
-Const previewSection=文件.getElementById('previewSection')；
-Const previewImage=文件.getElementById('预览图像')；
+        // 预览选中的图片
+        document.getElementById('localImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                selectedFile = file;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewSection = document.getElementById('previewSection');
+                    const previewImage = document.getElementById('previewImage');
                     
-previewImage.src=e。目标.结果；
-previewSection.风格.显示='块'；
-};
-读者.readAsDataURL(文件)；
-}
-});
+                    previewImage.src = e.target.result;
+                    previewSection.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
 
-// 上传图片函数
-功能uploadImage(){
-常量imageUrl=文件.getElementById('imageUrl')。价值.修剪()；
-Const StatusMessage=文件.getElementById('StatusMessage')；
+        // 上传图片函数
+        function uploadImage() {
+            const imageUrl = document.getElementById('imageUrl').value.trim();
+            const statusMessage = document.getElementById('statusMessage');
             
-// 验证输入
-如果(！imageUrl){
-showStatus('请输入游戏图片URL地址'，'错误')；
-返回;
-}
+            // 验证输入
+            if (!imageUrl) {
+                showStatus('请输入游戏图片URL地址', 'error');
+                return;
+            }
             
-如果(！selectedFile){
-showStatus('请选择要上传的本地图片'，'错误')；
-返回;
-}
+            if (!selectedFile) {
+                showStatus('请选择要上传的本地图片', 'error');
+                return;
+            }
             
-如果(！imageUrl.包括(配置.targetDomain)||！imageUrl。包括('SnShare/SocialProfile')){
-showStatus('URL格式不正确，请确认是游戏内图片链接'，'错误')；
-返回;
-}
+            if (!imageUrl.includes(config.targetDomain) || !imageUrl.includes('SnsShare/SocialProfile')) {
+                showStatus('URL格式不正确，请确认是游戏内图片链接', 'error');
+                return;
+            }
             
-showStatus('开始处理上传...'，”)；
+            showStatus('开始处理上传...', '');
             
-尝试 {
-//提取Cos键(路径)
-Const钥匙=extractCosKey(imageUrl)；
-控制台.日志('提取的Cos键：'，钥匙)；
+            try {
+                // 提取COS key（路径）
+                const key = extractCosKey(imageUrl);
+                console.log('提取的COS Key:', key);
                 
-// 显示处理状态
-showStatus(‘正在上传图片到COS路径：${钥匙}‘，”)；
+                // 显示处理状态
+                showStatus(`正在上传图片到COS路径: ${key}`, '');
                 
-//使用Cos SDK上传文件
-Cos.putObject({
-桶: 配置.桶,
-地区: 配置.地区,
-钥匙: 钥匙,
-身体：selectedFile，
-ONPROGRESS：功能(progressData){
-Const百分比=数学.圆的(progressData.百分比*100)；
-showStatus(‘上传进度：${百分比}%‘，”)；
-}
-}, 功能(犯错, 数据) {
-如果 (犯错) {
-控制台.误差('上传失败:', 犯错);
-showStatus('上传失败：'+犯错.消息，'错误')；
-} 其他 {
-控制台.日志('上传成功:', 数据);
+                // 使用COS SDK上传文件
+                cos.putObject({
+                    Bucket: config.bucket,
+                    Region: config.region,
+                    Key: key,
+                    Body: selectedFile,
+                    onProgress: function(progressData) {
+                        const percent = Math.round(progressData.percent * 100);
+                        showStatus(`上传进度: ${percent}%`, '');
+                    }
+                }, function(err, data) {
+                    if (err) {
+                        console.error('上传失败:', err);
+                        showStatus('上传失败: ' + err.message, 'error');
+                    } else {
+                        console.log('上传成功:', data);
                         
-Const gameUrl=imageUrl；
-常数cosUrl='https://${config.桶}。Cos.${config.地区}。myqcloud.com/${key}'；
+                        const gameUrl = imageUrl;
+                        const cosUrl = `https://${config.bucket}.cos.${config.region}.myqcloud.com/${key}`;
                         
-常数successMessage='
-✅  上传成功！
-                            <溴><溴>
-                            <强大的>游戏内相册链接:</强大的><溴>
-                            <一个 href="${gameUrl}" 目标="_空白" 风格="断字符: 打破一切;">${gameUrl}</一个>
-                            <溴><溴>
-                            <强大的>存储桶实时链接:</强大的><溴>
-                            <一个 href="${cosUrl}" 目标="_空白" 风格="断字符: 打破一切;">${cosUrl}</一个>
-                            <溴><溴>
-📝  提示：如果已有访问过相册图片，第二次上传可能存在缓存，可能需要一段时间后生效
-`;
+                        const successMessage = `
+                            ✅ 上传成功！
+                            <br><br>
+                            <strong>游戏内相册链接:</strong><br>
+                            <a href="${gameUrl}" target="_blank" style="word-break: break-all;">${gameUrl}</a>
+                            <br><br>
+                            <strong>存储桶实时链接:</strong><br>
+                            <a href="${cosUrl}" target="_blank" style="word-break: break-all;">${cosUrl}</a>
+                            <br><br>
+                            📝 提示：如果已有访问过相册图片，第二次上传可能存在缓存，可能需要一段时间后生效
+                        `;
                         
-showStatus(successMessage，'success')；
+                        showStatus(successMessage, 'success');
                     }
                 });
                 
-}catch(错误){
-console.error('处理错误：'，误差)；
-showStatus('处理错误：'+error.message，'error')；
+            } catch (error) {
+                console.error('处理错误:', error);
+                showStatus('处理错误: ' + error.message, 'error');
             }
         }
 
-//从URL中提取Cos密钥
-函数extractCosKey(url){
-// 移除可能的查询参数
-Const cleanUrl=url.split('？')[0]；
-// 提取域名后的路径部分
-常数路径=cleanUrl.split(config.targetDomain+'/')[1]；
-返回路径；
+        // 从URL中提取COS Key
+        function extractCosKey(url) {
+            // 移除可能的查询参数
+            const cleanUrl = url.split('?')[0];
+            // 提取域名后的路径部分
+            const path = cleanUrl.split(config.targetDomain + '/')[1];
+            return path;
         }
 
-// 显示状态消息
-函数showStatus(消息，类型){
-ConstatusElement=document.getElementById('StatusMessage')；
-statusElement.innerHTML=消息；
-statusElement.style.display='block'；
+        // 显示状态消息
+        function showStatus(message, type) {
+            const statusElement = document.getElementById('statusMessage');
+            statusElement.innerHTML = message;
+            statusElement.style.display = 'block';
             
-// 移除之前的样式类
-statusElement.classList.remove('success'，'error')；
+            // 移除之前的样式类
+            statusElement.classList.remove('success', 'error');
             
-// 添加新的样式类
-if(type==='success'){
-statusElement.classList.add('success')；
-}else if(type==='error'){
-statusElement.classList.add('error')；
+            // 添加新的样式类
+            if (type === 'success') {
+                statusElement.classList.add('success');
+            } else if (type === 'error') {
+                statusElement.classList.add('error');
             }
         }
 
-// 示例：自动填充测试URL（可选）
-document.addEventListener('DOMContentLoaded'，函数(){
-// 可以取消注释下面的行来自动填充一个示例URL
-//document.getElementById('imageUrl').value='https://download.nature.qq.com/SnsShare/SocialProfile/5E71D72F5EFF3419C972328DBD36E568/175791409.jpg';
+        // 示例：自动填充测试URL（可选）
+        document.addEventListener('DOMContentLoaded', function() {
+            // 可以取消注释下面的行来自动填充一个示例URL
+            // document.getElementById('imageUrl').value = 'https://download.nature.qq.com/SnsShare/SocialProfile/5E71D72F5EFF3419C972328DBD36E568/175791409.jpg';
         });
-</脚本>
-</身体>
-</超文本标记语言>
+    </script>
+</body>
+</html>
