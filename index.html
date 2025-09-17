@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COS图片上传工具</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+        body { background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%); min-height: 100vh; padding: 20px; display: flex; justify-content: center; align-items: center; }
+        .container { width: 100%; max-width: 800px; background: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); overflow: hidden; }
+        .header { background: #1890ff; color: white; padding: 20px; text-align: center; }
+        .main-content { padding: 30px; }
+        .section { margin-bottom: 30px; }
+        .section-title { font-size: 18px; color: #333; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #eee; display: flex; align-items: center; }
+        .section-title i { margin-right: 10px; color: #1890ff; }
+        .upload-area { border: 2px dashed #ccc; border-radius: 8px; padding: 30px; text-align: center; margin-bottom: 20px; cursor: pointer; transition: all 0.3s; }
+        .upload-area:hover { border-color: #1890ff; background: #f9f9f9; }
+        .upload-area i { font-size: 48px; color: #1890ff; margin-bottom: 15px; }
+        .input-group { margin-bottom: 20px; }
+        .input-group label { display: block; margin-bottom: 8px; color: #333; font-weight: 500; }
+        .input-group input { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; transition: all 0.3s; }
+        .input-group input:focus { outline: none; border-color: #1890ff; box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2); }
+        .btn-group { display: flex; gap: 15px; }
+        .btn { flex: 1; padding: 14px; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; transition: all 0.3s; display: flex; justify-content: center; align-items: center; }
+        .btn i { margin-right: 8px; }
+        .btn-cancel { background: #f5f5f5; color: #666; }
+        .btn-cancel:hover { background: #e6e6e6; }
+        .btn-primary { background: #1890ff; color: white; }
+        .btn-primary:hover { background: #0c7cd5; }
+        .result-area { background: #f9f9f9; border-radius: 8px; padding: 20px; margin-top: 20px; display: none; }
+        .result-area h3 { color: #333; margin-bottom: 15px; display: flex; align-items: center; }
+        .result-area h3 i { margin-right: 10px; color: #52c41a; }
+        .link-item { margin-bottom: 15px; }
+        .link-item label { display: block; color: #666; margin-bottom: 5px; font-weight: 500; }
+        .link-url { display: flex; align-items: center; background: white; border: 1px solid #eee; border-radius: 4px; padding: 10px 15px; font-size: 14px; color: #1890ff; word-break: break-all; }
+        .link-url i { margin-right: 8px; color: #52c41a; }
+        .copy-btn { background: #52c41a; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-left: 10px; font-size: 12px; }
+        .copy-btn:hover { background: #389e0d; }
+        .tip { background: #fffbe6; border: 1px solid #ffe58f; border-radius: 4px; padding: 12px; margin-top: 20px; color: #666; font-size: 14px; }
+        .tip i { color: #faad14; margin-right: 8px; }
+        .error-area { background: #fff2f0; border: 1px solid #ffccc7; border-radius: 4px; padding: 15px; margin-top: 20px; color: #f5222d; display: none; }
+        .error-area i { margin-right: 8px; }
+        .config-info { background: #f0f8ff; border-radius: 8px; padding: 15px; margin-top: 30px; }
+        .config-info h3 { color: #1890ff; margin-bottom: 10px; display: flex; align-items: center; }
+        .config-info h3 i { margin-right: 10px; }
+        .config-item { display: flex; margin-bottom: 8px; font-size: 14px; }
+        .config-label { color: #666; min-width: 120px; }
+        .config-value { color: #333; font-family: monospace; word-break: break-all; }
+        #status { color: #f5222d; font-weight: bold; }
+        
+        @media (max-width: 600px) {
+            .btn-group { flex-direction: column; }
+            .config-item { flex-direction: column; }
+            .config-label { min-width: auto; margin-bottom: 5px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-file-upload"></i> 文件管理</h1>
+        </div>
+        
+        <div class="main-content">
+            <div class="section">
+                <h2 class="section-title"><i class="fas fa-upload"></i> 图片上传</h2>
+                
+                <div class="upload-area" id="dropArea">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p class="upload-text">拖放图片到此处或点击选择文件</p>
+                    <p class="upload-text">支持 JPG, PNG, GIF 格式，最大 5MB</p>
+                    <input type="file" id="fileInput" style="display: none;" accept="image/jpeg,image/png,image/gif">
+                </div>
+                
+                <div class="input-group">
+                    <label for="urlInput"><i class="fas fa-link"></i> 请输入图片URL：</label>
+                    <input type="text" id="urlInput" placeholder="例如：https://example.com/image.jpg">
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn btn-cancel" id="cancelBtn"><i class="fas fa-times"></i> 取消</button>
+                    <button class="btn btn-primary" id="uploadBtn"><i class="fas fa-upload"></i> 开始上传</button>
+                </div>
+                
+                <div class="error-area" id="errorArea">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="errorText"></span>
+                </div>
+                
+                <div class="result-area" id="resultArea">
+                    <h3><i class="fas fa-check-circle"></i> 上传成功！</h3>
+                    
+                    <div class="link-item">
+                        <label>游戏内相册链接:</label>
+                        <div style="display: flex; align-items: center;">
+                            <div class="link-url">
+                                <i class="fas fa-link"></i>
+                                <span id="gameLink"></span>
+                            </div>
+                            <button class="copy-btn" onclick="copyToClipboard('gameLink')"><i class="fas fa-copy"></i> 复制</button>
+                        </div>
+                    </div>
+                    
+                    <div class="link-item">
+                        <label>存储桶实时链接:</label>
+                        <div style="display: flex; align-items: center;">
+                            <div class="link-url">
+                                <i class="fas fa-database"></i>
+                                <span id="bucketLink"></span>
+                            </div>
+                            <button class="copy-btn" onclick="copyToClipboard('bucketLink')"><i class="fas fa-copy"></i> 复制</button>
+                        </div>
+                    </div>
+                    
+                    <div class="tip">
+                        <i class="fas fa-info-circle"></i>
+                        <span id="messageText">提示：如果已有访问过相册图片第二次上传可能存在缓存，可能需要两天后生效</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="config-info">
+                <h3><i class="fas fa-cog"></i> 配置信息</h3>
+                
+                <div class="config-item">
+                    <span class="config-label">API地址:</span>
+                    <span class="config-value" id="apiEndpoint">等待配置...</span>
+                </div>
+                
+                <div class="config-item">
+                    <span class="config-label">状态:</span>
+                    <span class="config-value" id="status">未配置</span>
+                </div>
+                
+                <div class="config-item">
+                    <span class="config-label">存储桶:</span>
+                    <span class="config-value" id="configBucket">my-game-photos-xygzs-1379178032</span>
+                </div>
+                
+<div class="config-item">
+<span class="config-label">地域：</span>
+<span class="config-value"id="configRegion">ap-nanjing</span>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+// ✅✅✅ 重要：使用你的函数URL  ✅✅✅
+常量API_URL='https://1379178032-6w3c4p3ojh.ap-nanjing.tencentscf.com';
+        
+document.addEventListener('DOMContentLoaded'，函数(){
+const dropArea=document.getElementById('dropArea')；
+Const FileInput=document.getElementById('FileInput')；
+Const urlInput=document.getElementById('urlInput')；
+const cancelBtn=document.getElementById('cancelBtn')；
+Const uploadBtn=document.getElementById('uploadBtn')；
+Const resultArea=document.getElementById('resultArea')；
+Const errorArea=document.getElementById('errorArea')；
+常量errorText=document.getElementById('errorText')；
+Const GameLink=document.getElementById('GameLink')；
+Const bucketLink=document.getElementById('bucketLink')；
+const messagetext=document.getElementById('messageText')；
+const apiEndpoint=document.getElementById('apiEndpoint')；
+常量状态=document.getElementById('status')；
+Const configBucket=document.getElement ById('configBucket')；
+Const configRegion=document.getElementById('configRegion')；
+            
+// 显示配置信息
+apiEndpoint.textContent=API_URL；
+status.textContent='已配置'；
+status.style.color='#52c41a'；
+            
+// 文件选择事件
+dropArea.addEventListener('click'，函数(){
+fileInput.click()；
+            });
+            
+fileInput.addEventListener('change'，函数(e){
+if(e.target.files.length>0){
+urlInput.value="；
+                }
+            });
+            
+// 拖放功能
+dropArea.addEventListener('dragover'，函数(e){
+e.preventDefault()；
+dropArea.style.borderColor='#1890ff'；
+dropArea.style.background='#f0f8ff'；
+            });
+            
+dropArea.addEventListener('dragleave'，函数(e){
+e.preventDefault()；
+dropArea.风格.borderColor='#ccc'；
+dropArea.风格.背景="；
+            });
+            
+dropArea.addEventListener('删除'，函数(e){
+e.preventDefault()；
+dropArea.风格.borderColor='#ccc'；
+dropArea.风格.背景="；
+                
+如果(e.DataTransfer.文件.长度>0){
+FileInput.文件=e.DataTransfer.文件；
+urlInput.价值="；
+                }
+            });
+            
+// 取消按钮事件
+cancelBtn.addEventListener('单击'，函数(){
+urlInput.价值="；
+FileInput.价值="；
+resultArea.风格.显示='无'；
+errorArea.风格.显示='无'；
+            });
+            
+// 上传按钮事件
+uploadBtn.addEventListener('单击'，异步函数(){
+ConstURL=urlInput.价值.修剪()；
+Const文件=FileInput.文件[0]；
+                
+如果(！URL&&！文件){
+showError('请输入URL或选择文件')；
+返回；
+                }
+                
+如果(文件和文件.大小>5*1024*1024){
+showError('文件大小不能超过5 MB')；
+返回；
+                }
+                
+尝试{
+setUploadingState()；
+                    
+让结果；
+如果(文件){
+结果=等待上载文件(文件)；
+}其他{
+结果=等候uploadUrl(URL)；
+                    }
+                    
+如果(结果.成功){
+showSuccess(结果。game_link，结果。Cos_link，result。消息)；
+}其他{
+showError(结果.误差||'上传失败')；
+                    }
+}赶上(错误){
+showError('网络错误：'+误差.消息)；
+}最终{
+resetUploadButton()；
+                }
+            });
+            
+//上传URL
+异步函数uploadUrl(imageUrl){
+常量响应=等待提取(API_URL，{
+方法："邮件"，
+标题：{
+'内容类型'：'应用程序/约翰逊，
+                    },
+正文：JSON.使字符串化({
+image_url:imageUrl
+                    })
+                });
+                
+如果(！response.好的){
+掷回新错误('HTTP错误：${响应.状态}')；
+                }
+                
+返回等待响应.JSON()；
+            }
+            
+// 上传文件
+异步函数uploadFile(文件){
+Const读者=新建FileReader()；
+                
+返回新承诺((解决、拒绝)=>{
+读者.onload=异步函数(){
+尝试{
+常量响应=等待提取(API_URL，{
+方法："邮件"，
+标题：{
+'内容类型'：'应用程序/约翰逊，
+                                },
+正文：JSON.使字符串化({
+<div班级="配置项目">
+<跨度班级="config-label">API地址：</span>
+<跨度班级="config-value"身份标识="apiEndpoint">等待配置...</span>
+</div>
+文件.addEventListener('DOMContentLoaded'，函数(){
+<div班级="配置项目">
+<跨度班级="config-label">状态：</span>
+<跨度班级="config-value"身份标识="状态">未配置</span>
+</div>
+ConstuploadBtn=文件.getElementById('uploadBtn')；
+<div班级="配置项目">
+<跨度班级="config-label">存储桶：</span>
+<跨度班级="config-value"身份标识="configBucket">我的-游戏-照片-xygzs-1379178032</span>
+</div>
+dropArea.风格.背景="；
+<div班级="配置项目">
+<跨度班级="config-label">地域：</span>
+<跨度班级="config-value"身份标识="configRegion">美联社-南京</span>
+</div>
+</div>
+</div>
+</div>
+apiEndpoint.textContent=API_URL；
+<脚本>
+// ✅✅✅ 重要：使用你的函数URL        ✅✅✅
+常量API_URL='https://1379178032-6w3c4p3ojh.ap-nanjing.tencentscf.com';
+dropArea.风格.背景="；
+dropArea.addEventListener('单击'，函数(){
+如果(e.DataTransfer.文件.长度>0){
+FileInput.文件=e.DataTransfer.文件；
+urlInput.价值="；
+uploadBtn.禁用=false；
+}
+urlInput.价值="；
+// 取消按钮事件
+cancelBtn.addEventListener('单击'，函数(){
+ConstGameLink=文件.getElementById('GameLink')；
+ConstbucketLink=文件.getElementById('BucketLink')；
+Constmessagetext=文件.getElementById('messageText')；
+ConstapiEndpoint=文件.getElementById('apiEndpoint')；
+常量状态=文件.getElementById('状态')；
+ConstconfigBucket=文件.get元素 BYID('configBucket')；
+ConstconfigRegion=文件.getElementById('configRegion')；
+uploadBtn.addEventListener('单击'，异步函数(){
+// 显示配置信息
+apiEndpoint.textContent=API_URL；
+状态.textContent='已配置'；
+状态.风格.颜色='#52c41a'；
+showError('请输入URL或选择文件')；
+// 文件选择事件
+dropArea.addEventListener('单击'，函数(){
+FileInput.点击()；
+如果(文件和文件.大小>5*1024*1024){
+领航员。剪贴板。WRITETEXT(文本)。然后(()=>{
+FileInput.addEventListener('更改'，函数(e){
+如果(e.目标.文件.长度>0){
+控制台.误差('复制失败：'，犯错)；
+警惕的('复制失败，请手动复制')；
+});
+}
+</脚本>
+</身体>
+</超文本标记语言>
