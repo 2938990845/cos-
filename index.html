@@ -3,329 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>游戏图片替换工具</title>
+    <title>文件上传工具</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            color: #333;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-            color: white;
-            padding: 25px;
-            text-align: center;
-        }
-        
-        .header h1 {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-        
-        .header p {
-            opacity: 0.9;
-            font-size: 14px;
-        }
-        
-        .content {
-            padding: 30px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-        
-        input[type="text"],
-        input[type="file"] {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-        
-        input[type="text"]:focus {
-            border-color: #3498db;
-            outline: none;
-        }
-        
-        .btn {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            color: white;
-            border: none;
-            padding: 15px 25px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            width: 100%;
-            transition: transform 0.2s;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
-        }
-        
-        .btn:active {
-            transform: translateY(0);
-        }
-        
-        .preview {
-            margin-top: 30px;
-            text-align: center;
-        }
-        
-        .preview img {
-            max-width: 100%;
-            max-height: 300px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            border: 3px solid #fff;
-        }
-        
-        .status {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 8px;
-            background: #f8f9fa;
-            border-left: 4px solid #3498db;
-        }
-        
-        .status.success {
-            border-left-color: #27ae60;
-            background: #e8f5e8;
-        }
-        
-        .status.error {
-            border-left-color: #e74c3c;
-            background: #fee;
-        }
-        
-        .config-info {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 12px;
-            color: #666;
-        }
-        
-        .config-info h3 {
-            margin-bottom: 10px;
-            color: #2c3e50;
-        }
-        
-        .url-example {
-            font-size: 12px;
-            color: #666;
-            margin-top: 5px;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; margin: 20px; background-color: #f0f2f5; }
+        .container { max-width: 100%; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 20px; color: #8a2be2; }
+        .tip-area { background-color: #8a2be2; color: white; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 14px; }
+        .input-group { margin-bottom: 20px; }
+        input[type="text"] { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; margin-top: 5px; }
+        .btn { background-color: #8a2be2; color: white; padding: 16px; border: none; border-radius: 8px; cursor: pointer; width: 100%; font-size: 18px; font-weight: bold; }
+        .btn:disabled { background-color: #aaa; }
+        .result { margin-top: 20px; padding: 15px; border-radius: 8px; display: none; font-size: 14px; }
+        .success { background-color: #e6f7e6; color: #2a8a2a; border: 1px solid #c3e6cb; }
+        .error { background-color: #fde8e8; color: #d32f2f; border: 1px solid #f5c6cb; }
+        a { color: #8a2be2; word-break: break-all; }
     </style>
-    <!-- 引入腾讯云COS SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/cos-js-sdk-v5/dist/cos-js-sdk-v5.min.js"></script>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎮 游戏图片替换工具</h1>
-            <p>安全替换游戏内图片内容 - 仅供技术研究使用</p>
+            <h2>文件上传工具</h2>
+            <p>版本 1.0</p>
         </div>
-        
-        <div class="content">
-            <div class="config-info">
-                <h3>📋 当前配置信息</h3>
-                <p>存储桶: sgame-data-service-1252931805</p>
-                <p>地域: ap-nanjing</p>
-                <p>目标域名: download.nature.qq.com</p>
-            </div>
-            
-            <div class="form-group">
-                <label for="imageUrl">🖼️ 游戏图片URL地址</label>
-                <input type="text" id="imageUrl" placeholder="请输入游戏内图片URL，例如: https://download.nature.qq.com/SnsShare/SocialProfile/xxx/xxx.jpg">
-                <div class="url-example">示例: https://download.nature.qq.com/SnsShare/SocialProfile/5E71D72F5EFF3419C972328DBD36E568/175791409.jpg</div>
-            </div>
-            
-            <div class="form-group">
-                <label for="localImage">📁 选择本地替换图片</label>
-                <input type="file" id="localImage" accept="image/*">
-            </div>
-            
-            <button class="btn" onclick="uploadImage()">🚀 开始上传替换</button>
-            
-            <div class="preview" id="previewSection" style="display: none;">
-                <h3>图片预览</h3>
-                <img id="previewImage" src="" alt="预览图">
-            </div>
-            
-            <div class="status" id="statusMessage" style="display: none;"></div>
+
+        <div class="tip-area">
+            <h3>操作提示</h3>
+            <ul>
+                <li>在下方输入框中填入图片路径，例如: <code>SnsShare/SocialProfile/.../xxx.jpg</code></li>
+                <li>本工具为功能演示版本。</li>
+            </ul>
         </div>
+
+        <div>
+            <h4>请输入URL或COS路径：</h4>
+            <div class="input-group">
+                <input type="text" id="filePath" placeholder="例如: SnsShare/SocialProfile/F39566035AEEDC6A68EAEC36B350FF21/175815958.jpg">
+            </div>
+
+            <button class="btn" id="uploadBtn">开始上传</button>
+        </div>
+
+        <div id="resultArea" class="result"></div>
     </div>
 
     <script>
-        // 配置信息 - 与Python脚本保持一致
-        const config = {
-            secretId: 'AKIDNZbQ2Sfy5D9rM073nLhstiQzMWUHyUpI',
-            secretKey: 'OaYL1Yu3qY3JAyd6OceRzMbcrukNcdR5',
-            region: 'ap-nanjing',
-            bucket: 'sgame-data-service-1252931805',
-            targetDomain: 'download.nature.qq.com'
-        };
+        // ！！！重要：将下面的URL替换成您第四步得到的真实URL ！！！
+        const BACKEND_URL = "https://service-xxx-xxx.gz.apigw.tencentcs.com/release/file-uploader";
 
-        // 初始化COS客户端
-        const cos = new COS({
-            SecretId: config.secretId,
-            SecretKey: config.secretKey
-        });
+        document.getElementById('uploadBtn').addEventListener('click', async () => {
+            const filePath = document.getElementById('filePath').value.trim();
+            const button = document.getElementById('uploadBtn');
+            const resultArea = document.getElementById('resultArea');
 
-        let selectedFile = null;
+            resultArea.style.display = 'none';
+            resultArea.className = 'result';
+            button.disabled = true;
+            button.textContent = '上传中...';
 
-        // 预览选中的图片
-        document.getElementById('localImage').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                selectedFile = file;
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const previewSection = document.getElementById('previewSection');
-                    const previewImage = document.getElementById('previewImage');
-                    
-                    previewImage.src = e.target.result;
-                    previewSection.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // 上传图片函数
-        function uploadImage() {
-            const imageUrl = document.getElementById('imageUrl').value.trim();
-            const statusMessage = document.getElementById('statusMessage');
-            
-            // 验证输入
-            if (!imageUrl) {
-                showStatus('请输入游戏图片URL地址', 'error');
-                return;
-            }
-            
-            if (!selectedFile) {
-                showStatus('请选择要上传的本地图片', 'error');
-                return;
-            }
-            
-            if (!imageUrl.includes(config.targetDomain) || !imageUrl.includes('SnsShare/SocialProfile')) {
-                showStatus('URL格式不正确，请确认是游戏内图片链接', 'error');
-                return;
-            }
-            
-            showStatus('开始处理上传...', '');
-            
             try {
-                // 提取COS key（路径）
-                const key = extractCosKey(imageUrl);
-                console.log('提取的COS Key:', key);
-                
-                // 显示处理状态
-                showStatus(`正在上传图片到COS路径: ${key}`, '');
-                
-                // 使用COS SDK上传文件
-                cos.putObject({
-                    Bucket: config.bucket,
-                    Region: config.region,
-                    Key: key,
-                    Body: selectedFile,
-                    onProgress: function(progressData) {
-                        const percent = Math.round(progressData.percent * 100);
-                        showStatus(`上传进度: ${percent}%`, '');
-                    }
-                }, function(err, data) {
-                    if (err) {
-                        console.error('上传失败:', err);
-                        showStatus('上传失败: ' + err.message, 'error');
-                    } else {
-                        console.log('上传成功:', data);
-                        
-                        const gameUrl = imageUrl;
-                        const cosUrl = `https://${config.bucket}.cos.${config.region}.myqcloud.com/${key}`;
-                        
-                        const successMessage = `
-                            ✅ 上传成功！
-                            <br><br>
-                            <strong>游戏内相册链接:</strong><br>
-                            <a href="${gameUrl}" target="_blank" style="word-break: break-all;">${gameUrl}</a>
-                            <br><br>
-                            <strong>存储桶实时链接:</strong><br>
-                            <a href="${cosUrl}" target="_blank" style="word-break: break-all;">${cosUrl}</a>
-                            <br><br>
-                            📝 提示：如果已有访问过相册图片，第二次上传可能存在缓存，可能需要一段时间后生效
-                        `;
-                        
-                        showStatus(successMessage, 'success');
-                    }
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ filePath: filePath })
                 });
-                
+
+                const data = await response.json();
+
+                if (data.success) {
+                    resultArea.innerHTML = `
+                        <strong>${data.message}</strong>
+                        <p><small>${data.note}</small></p>
+                        <p><strong>游戏内相册链接:</strong><br><a href="${data.gameAlbumLink}" target="_blank">${data.gameAlbumLink}</a></p>
+                        <p><strong>存储桶实时链接:</strong><br><a href="${data.bucketRealtimeLink}" target="_blank">${data.bucketRealtimeLink}</a></p>
+                    `;
+                    resultArea.classList.add('success');
+                } else {
+                    throw new Error(data.error);
+                }
             } catch (error) {
-                console.error('处理错误:', error);
-                showStatus('处理错误: ' + error.message, 'error');
+                resultArea.innerHTML = `<strong>操作失败!</strong><p>${error.message}</p>`;
+                resultArea.classList.add('error');
+            } finally {
+                resultArea.style.display = 'block';
+                button.disabled = false;
+                button.textContent = '开始上传';
             }
-        }
-
-        // 从URL中提取COS Key
-        function extractCosKey(url) {
-            // 移除可能的查询参数
-            const cleanUrl = url.split('?')[0];
-            // 提取域名后的路径部分
-            const path = cleanUrl.split(config.targetDomain + '/')[1];
-            return path;
-        }
-
-        // 显示状态消息
-        function showStatus(message, type) {
-            const statusElement = document.getElementById('statusMessage');
-            statusElement.innerHTML = message;
-            statusElement.style.display = 'block';
-            
-            // 移除之前的样式类
-            statusElement.classList.remove('success', 'error');
-            
-            // 添加新的样式类
-            if (type === 'success') {
-                statusElement.classList.add('success');
-            } else if (type === 'error') {
-                statusElement.classList.add('error');
-            }
-        }
-
-        // 示例：自动填充测试URL（可选）
-        document.addEventListener('DOMContentLoaded', function() {
-            // 可以取消注释下面的行来自动填充一个示例URL
-            // document.getElementById('imageUrl').value = 'https://download.nature.qq.com/SnsShare/SocialProfile/5E71D72F5EFF3419C972328DBD36E568/175791409.jpg';
         });
     </script>
 </body>
